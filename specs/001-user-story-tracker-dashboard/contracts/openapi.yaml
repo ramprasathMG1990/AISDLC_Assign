@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  title: Azure User Story Tracker API
+  version: 1.0.0
+paths:
+  /stories:
+    get:
+      summary: List and filter active stories
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: applicationId, in: query, schema: { type: string } }
+        - { name: moduleId, in: query, schema: { type: string } }
+        - { name: featureId, in: query, schema: { type: string } }
+        - { name: sprintId, in: query, schema: { type: string } }
+        - { name: releaseId, in: query, schema: { type: string } }
+        - { name: assigneeId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+        - { name: startDate, in: query, schema: { type: string, format: date } }
+        - { name: endDate, in: query, schema: { type: string, format: date } }
+        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 25 } }
+      responses:
+        "200":
+          description: Paginated active stories
+        "400":
+          description: Invalid filters
+        "401":
+          description: Authentication required
+        "403":
+          description: Permission denied
+    post:
+      summary: Create a story
+      responses:
+        "201": { description: Story created }
+        "400": { description: Validation errors }
+        "401": { description: Authentication required }
+        "403": { description: Permission denied }
+        "409": { description: Duplicate story identity }
+  /stories/{storyId}:
+    get:
+      summary: Get an active story
+      parameters:
+        - { name: storyId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Story details }
+        "404": { description: Story not found }
+    patch:
+      summary: Update story fields or status
+      parameters:
+        - { name: storyId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Story updated }
+        "400": { description: Validation or transition error }
+        "404": { description: Story not found }
+        "409": { description: Update conflict }
+    delete:
+      summary: Soft-delete a story
+      parameters:
+        - { name: storyId, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Story soft-deleted }
+        "403": { description: Deletion permission denied }
+        "404": { description: Story not found }
+  /stories/{storyId}/history:
+    get:
+      summary: Get status history
+      parameters:
+        - { name: storyId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Status history }
+        "404": { description: Story not found }
+  /stories/{storyId}/audit:
+    get:
+      summary: Get audit trail entries
+      parameters:
+        - { name: storyId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Audit trail }
+        "403": { description: Permission denied }
+        "404": { description: Story not found }
+  /dashboard/summary:
+    get:
+      summary: Get KPI and chart summary
+      responses:
+        "200": { description: Dashboard summary }
+        "400": { description: Invalid filter set }
+        "503": { description: Tracker data unavailable }
+  /dashboard/drill-down:
+    get:
+      summary: Get stories represented by a chart or KPI selection
+      responses:
+        "200": { description: Matching paginated stories }
+        "400": { description: Invalid drill-down selection }
+  /exports/csv:
+    post:
+      summary: Export filtered stories as CSV
+      responses:
+        "200": { description: CSV export available }
+        "202": { description: Large export accepted for asynchronous processing }
+        "400": { description: Invalid export scope }
+        "503": { description: Export service unavailable }
+  /exports/pdf:
+    post:
+      summary: Export filtered dashboard report as PDF
+      responses:
+        "200": { description: PDF export available }
+        "202": { description: Large export accepted for asynchronous processing }
+        "400": { description: Invalid export scope }
+        "503": { description: Export service unavailable }
