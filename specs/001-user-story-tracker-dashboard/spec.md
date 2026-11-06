@@ -12,6 +12,12 @@
 
 ### Session 2026-11-07
 
+- Application ownership: The Azure User Story Tracker is the Node.js/Express REST management
+  application and source of truth. The React User Story Dashboard is reporting-only and does not
+  create, update, delete, or directly query Tracker data stores.
+- Story-management presentation: No Tracker-specific React management page is part of this feature.
+  Story create/update/delete operations are delivered through the Tracker REST API for authorized
+  clients; the Dashboard implements only reporting, filtering, drill-down, and exports.
 - Q: Which status-transition behavior should the Tracker enforce? → A: Linear; stories can change only to the next adjacent status in the defined sequence.
 - Q: How should sprint completion percentage be calculated? → A: Completed stories divided by total stories.
 - Q: What should happen to deleted stories' data and audit records? → A: Soft-delete; remove stories from active views while preserving recoverable data.

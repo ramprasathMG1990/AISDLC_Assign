@@ -82,10 +82,10 @@
 - [ ] T037 [US1] Implement `GET /stories`, `GET /stories/{storyId}`, and `PATCH /stories/{storyId}` routes with pagination and standardized errors in `azure-user-story-tracker/src/routes/stories-route.ts`
 - [ ] T038 [US1] Implement `DELETE /stories/{storyId}` confirmation-facing route contract and soft-delete `204` response in `azure-user-story-tracker/src/routes/stories-route.ts`
 - [ ] T039 [US1] Implement `GET /stories/{storyId}/history` and `GET /stories/{storyId}/audit` routes in `azure-user-story-tracker/src/routes/story-history-route.ts`
-- [ ] T040 [US1] Build Tracker story list, search, filter, detail, status history, and confirmation UI in `user-story-dashboard/src/pages/StoryManagerPage.tsx`
-- [ ] T041 [US1] Add reusable story form field validation and field-level error components in `user-story-dashboard/src/components/stories/`
+- [ ] T040 [US1] Add reusable Tracker story-management request and response types to `shared/contracts/src/story-management.ts`
+- [ ] T041 [US1] Add reusable Tracker story-management validation constraints and stable field-error types to `shared/contracts/src/validation.ts`
 
-**Checkpoint**: User Story 1 is independently functional as the Tracker MVP
+**Checkpoint**: User Story 1 is independently functional as the Tracker API MVP
 
 ---
 

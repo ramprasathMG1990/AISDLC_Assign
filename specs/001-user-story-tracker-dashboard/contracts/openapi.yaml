@@ -7,103 +7,400 @@ paths:
     get:
       summary: List and filter active stories
       parameters:
-        - { name: search, in: query, schema: { type: string } }
-        - { name: applicationId, in: query, schema: { type: string } }
-        - { name: moduleId, in: query, schema: { type: string } }
-        - { name: featureId, in: query, schema: { type: string } }
-        - { name: sprintId, in: query, schema: { type: string } }
-        - { name: releaseId, in: query, schema: { type: string } }
-        - { name: assigneeId, in: query, schema: { type: string } }
-        - { name: status, in: query, schema: { type: string } }
-        - { name: startDate, in: query, schema: { type: string, format: date } }
-        - { name: endDate, in: query, schema: { type: string, format: date } }
-        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
-        - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 25 } }
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/ModuleId"
+        - $ref: "#/components/parameters/FeatureId"
+        - $ref: "#/components/parameters/SprintId"
+        - $ref: "#/components/parameters/ReleaseId"
+        - $ref: "#/components/parameters/AssigneeId"
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
           description: Paginated active stories
-        "400":
-          description: Invalid filters
-        "401":
-          description: Authentication required
-        "403":
-          description: Permission denied
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedStories" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
     post:
       summary: Create a story
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StoryCreate" }
       responses:
-        "201": { description: Story created }
-        "400": { description: Validation errors }
-        "401": { description: Authentication required }
-        "403": { description: Permission denied }
-        "409": { description: Duplicate story identity }
+        "201":
+          description: Story created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserStory" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
   /stories/{storyId}:
+    parameters:
+      - $ref: "#/components/parameters/StoryId"
     get:
       summary: Get an active story
-      parameters:
-        - { name: storyId, in: path, required: true, schema: { type: string } }
       responses:
-        "200": { description: Story details }
-        "404": { description: Story not found }
+        "200":
+          description: Story details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserStory" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
     patch:
       summary: Update story fields or status
-      parameters:
-        - { name: storyId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StoryUpdate" }
       responses:
-        "200": { description: Story updated }
-        "400": { description: Validation or transition error }
-        "404": { description: Story not found }
-        "409": { description: Update conflict }
+        "200":
+          description: Story updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserStory" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
     delete:
       summary: Soft-delete a story
-      parameters:
-        - { name: storyId, in: path, required: true, schema: { type: string } }
       responses:
         "204": { description: Story soft-deleted }
-        "403": { description: Deletion permission denied }
-        "404": { description: Story not found }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /stories/{storyId}/history:
+    parameters:
+      - $ref: "#/components/parameters/StoryId"
     get:
       summary: Get status history
-      parameters:
-        - { name: storyId, in: path, required: true, schema: { type: string } }
       responses:
-        "200": { description: Status history }
-        "404": { description: Story not found }
+        "200":
+          description: Status history
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/StatusHistory" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /stories/{storyId}/audit:
+    parameters:
+      - $ref: "#/components/parameters/StoryId"
     get:
       summary: Get audit trail entries
-      parameters:
-        - { name: storyId, in: path, required: true, schema: { type: string } }
       responses:
-        "200": { description: Audit trail }
-        "403": { description: Permission denied }
-        "404": { description: Story not found }
+        "200":
+          description: Audit trail
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AuditEntry" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /dashboard/summary:
     get:
       summary: Get KPI and chart summary
+      parameters:
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/ModuleId"
+        - $ref: "#/components/parameters/FeatureId"
+        - $ref: "#/components/parameters/SprintId"
+        - $ref: "#/components/parameters/ReleaseId"
+        - $ref: "#/components/parameters/AssigneeId"
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
       responses:
-        "200": { description: Dashboard summary }
-        "400": { description: Invalid filter set }
-        "503": { description: Tracker data unavailable }
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardSummary" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/Unavailable" }
   /dashboard/drill-down:
     get:
       summary: Get stories represented by a chart or KPI selection
+      parameters:
+        - name: dimension
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [status, application, module, feature, sprint, release, assignee, priority, dateRange]
+        - name: value
+          in: query
+          schema: { type: string }
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/ModuleId"
+        - $ref: "#/components/parameters/FeatureId"
+        - $ref: "#/components/parameters/SprintId"
+        - $ref: "#/components/parameters/ReleaseId"
+        - $ref: "#/components/parameters/AssigneeId"
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/StartDate"
+        - $ref: "#/components/parameters/EndDate"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
       responses:
-        "200": { description: Matching paginated stories }
-        "400": { description: Invalid drill-down selection }
+        "200":
+          description: Matching paginated stories
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedStories" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/Unavailable" }
   /exports/csv:
     post:
       summary: Export filtered stories as CSV
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ExportRequest" }
       responses:
-        "200": { description: CSV export available }
-        "202": { description: Large export accepted for asynchronous processing }
-        "400": { description: Invalid export scope }
-        "503": { description: Export service unavailable }
+        "200":
+          description: CSV export available
+          content:
+            text/csv:
+              schema: { type: string, format: binary }
+        "202": { $ref: "#/components/responses/ExportAccepted" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/Unavailable" }
   /exports/pdf:
     post:
       summary: Export filtered dashboard report as PDF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ExportRequest" }
       responses:
-        "200": { description: PDF export available }
-        "202": { description: Large export accepted for asynchronous processing }
-        "400": { description: Invalid export scope }
-        "503": { description: Export service unavailable }
+        "200":
+          description: PDF export available
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        "202": { $ref: "#/components/responses/ExportAccepted" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+components:
+  parameters:
+    StoryId:
+      name: storyId
+      in: path
+      required: true
+      schema: { type: string }
+    Search: { name: search, in: query, schema: { type: string } }
+    ApplicationId: { name: applicationId, in: query, schema: { type: string } }
+    ModuleId: { name: moduleId, in: query, schema: { type: string } }
+    FeatureId: { name: featureId, in: query, schema: { type: string } }
+    SprintId: { name: sprintId, in: query, schema: { type: string } }
+    ReleaseId: { name: releaseId, in: query, schema: { type: string } }
+    AssigneeId: { name: assigneeId, in: query, schema: { type: string } }
+    Status:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [New, Approved, Ready, "In Progress", Blocked, Testing, Completed, Closed]
+    StartDate: { name: startDate, in: query, schema: { type: string, format: date } }
+    EndDate: { name: endDate, in: query, schema: { type: string, format: date } }
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    PageSize: { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 25 } }
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        correlationId: { type: string }
+        fieldErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+    StoryCreate:
+      type: object
+      required: [userStoryId, title, description, applicationId, featureId, storyPoints, priority, status]
+      properties:
+        userStoryId: { type: string }
+        title: { type: string, minLength: 1 }
+        description: { type: string, minLength: 1 }
+        applicationId: { type: string }
+        moduleId: { type: string }
+        featureId: { type: string }
+        storyPoints: { type: number, minimum: 0 }
+        priority: { type: string }
+        status: { type: string, enum: [New, Approved, Ready, "In Progress", Blocked, Testing, Completed, Closed] }
+        sprintId: { type: string }
+        releaseId: { type: string }
+        assigneeId: { type: string }
+        businessOwnerId: { type: string }
+        acceptanceCriteria: { type: string }
+        dependencies: { type: array, items: { type: string } }
+    StoryUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        title: { type: string, minLength: 1 }
+        description: { type: string, minLength: 1 }
+        applicationId: { type: string }
+        moduleId: { type: string }
+        featureId: { type: string }
+        storyPoints: { type: number, minimum: 0 }
+        priority: { type: string }
+        status: { type: string, enum: [New, Approved, Ready, "In Progress", Blocked, Testing, Completed, Closed] }
+        sprintId: { type: string }
+        releaseId: { type: string }
+        assigneeId: { type: string }
+        businessOwnerId: { type: string }
+        acceptanceCriteria: { type: string }
+        dependencies: { type: array, items: { type: string } }
+    UserStory:
+      allOf:
+        - $ref: "#/components/schemas/StoryCreate"
+        - type: object
+          required: [createdAt, updatedAt, createdById, updatedById]
+          properties:
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+            createdById: { type: string }
+            updatedById: { type: string }
+    StatusHistory:
+      type: object
+      required: [historyId, userStoryId, previousStatus, newStatus, actorId, occurredAt]
+      properties:
+        historyId: { type: string }
+        userStoryId: { type: string }
+        previousStatus: { type: string }
+        newStatus: { type: string }
+        actorId: { type: string }
+        occurredAt: { type: string, format: date-time }
+    AuditEntry:
+      type: object
+      required: [auditId, entityType, action, actorId, occurredAt, changeSummary]
+      properties:
+        auditId: { type: string }
+        userStoryId: { type: string }
+        entityType: { type: string }
+        action: { type: string }
+        actorId: { type: string }
+        occurredAt: { type: string, format: date-time }
+        changeSummary: { type: string }
+    Pagination:
+      type: object
+      required: [page, pageSize, totalItems, totalPages]
+      properties:
+        page: { type: integer }
+        pageSize: { type: integer }
+        totalItems: { type: integer }
+        totalPages: { type: integer }
+    PaginatedStories:
+      type: object
+      required: [items, pagination]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/UserStory" }
+        pagination: { $ref: "#/components/schemas/Pagination" }
+    DashboardSummary:
+      type: object
+      required: [totalStories, completedStories, inProgressStories, blockedStories, totalStoryPoints, completedStoryPoints, sprintCompletionPercentage, charts]
+      properties:
+        totalStories: { type: integer, minimum: 0 }
+        completedStories: { type: integer, minimum: 0 }
+        inProgressStories: { type: integer, minimum: 0 }
+        blockedStories: { type: integer, minimum: 0 }
+        totalStoryPoints: { type: number, minimum: 0 }
+        completedStoryPoints: { type: number, minimum: 0 }
+        sprintCompletionPercentage: { type: number, minimum: 0, maximum: 100 }
+        charts: { type: object, additionalProperties: true }
+    FilterSet:
+      type: object
+      properties:
+        applicationIds: { type: array, items: { type: string } }
+        moduleIds: { type: array, items: { type: string } }
+        featureIds: { type: array, items: { type: string } }
+        sprintIds: { type: array, items: { type: string } }
+        releaseIds: { type: array, items: { type: string } }
+        assigneeIds: { type: array, items: { type: string } }
+        statuses: { type: array, items: { type: string } }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        searchText: { type: string }
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1, maximum: 200 }
+        sort: { type: string }
+    ExportRequest:
+      type: object
+      required: [filter]
+      properties:
+        filter: { $ref: "#/components/schemas/FilterSet" }
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Permission denied
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unavailable:
+      description: Tracker data or export service unavailable
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ExportAccepted:
+      description: Large export accepted for asynchronous processing
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [exportId, status, pollUrl]
+            properties:
+              exportId: { type: string }
+              status: { type: string, enum: [accepted, processing, completed, failed] }
+              pollUrl: { type: string, format: uri }

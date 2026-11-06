@@ -27,6 +27,10 @@ automated accessibility tooling.
 web service.
 
 **Project Type**: Two web applications with a REST API backend and a React frontend.
+Application ownership is explicit: the Node.js/Express Tracker is the backend management
+application and source of truth, while the React Dashboard is reporting-only. The Dashboard calls
+Tracker APIs for reads, drill-down, and exports; it does not provide Tracker write operations or
+direct data-store access.
 
 **Performance Goals**: 500 ms p95 server-side latency for dashboard API endpoints under documented
 expected load; server-side filtering and pagination for story lists.
