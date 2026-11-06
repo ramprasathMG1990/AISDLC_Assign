@@ -3,12 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "cross-env PORT=3001 ALLOW_DEV_AUTH=true DASHBOARD_ORIGIN=http://localhost:3000 tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "test": "tsx --test tests/unit/*.test.ts tests/integration/*.test.ts tests/contract/*.test.ts"
   },
   "engines": { "node": ">=20" },
   "dependencies": { "express": "^5.1.0", "pdfkit": "^0.17.2" },
-  "devDependencies": { "@types/express": "^5.0.3", "@types/node": "^24.0.0", "@types/pdfkit": "^0.17.3", "@types/supertest": "^6.0.3", "supertest": "^7.1.4", "tsx": "^4.20.5", "typescript": "^5.8.3" }
+  "devDependencies": { "@types/express": "^5.0.3", "@types/node": "^24.0.0", "@types/pdfkit": "^0.17.3",   "@types/supertest": "^6.0.3", "cross-env": "^10.1.0", "supertest": "^7.1.4", "tsx": "^4.20.5", "typescript": "^5.8.3" }
 }
