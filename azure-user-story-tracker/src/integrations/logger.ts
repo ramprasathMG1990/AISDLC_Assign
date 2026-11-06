@@ -1,0 +1,1 @@
+export function log(level:"info"|"warn"|"error",message:string,meta:Record<string,unknown>={}){const safe=JSON.stringify(meta).replace(/token/gi,"[redacted]");console.log(JSON.stringify({level,message,meta:JSON.parse(safe),timestamp:new Date().toISOString()}))}

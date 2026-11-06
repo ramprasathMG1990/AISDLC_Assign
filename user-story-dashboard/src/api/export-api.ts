@@ -1,0 +1,2 @@
+import { trackerFetch } from "./tracker-client";
+export async function downloadCsv(filter:any){const base=import.meta.env.VITE_TRACKER_API_URL??"http://localhost:3001";const res=await fetch(`${base}/exports/csv`,{method:"POST",headers:{Authorization:"Bearer dashboard-session","Content-Type":"application/json"},body:JSON.stringify({filter})});if(!res.ok)throw new Error("Export failed");const blob=await res.blob();const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="stories.csv";a.click();URL.revokeObjectURL(url)}

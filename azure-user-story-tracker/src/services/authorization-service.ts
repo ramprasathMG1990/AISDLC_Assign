@@ -1,0 +1,3 @@
+export interface AuthIdentity {sub:string;roles:string[]}
+export interface AuthorizationService { canCreate(i:AuthIdentity):boolean; canUpdate(i:AuthIdentity,story:{createdById:string}):boolean; canDelete(i:AuthIdentity,story:{createdById:string}):boolean; canRead(i:AuthIdentity):boolean }
+export class AuthorizationServiceImpl implements AuthorizationService { canCreate(i:AuthIdentity){return i.roles.length>0} canUpdate(i:AuthIdentity,s:{createdById:string}){return i.roles.includes("administrator")||i.roles.includes("delivery-manager")||i.sub===s.createdById} canDelete(i:AuthIdentity,s:{createdById:string}){return this.canUpdate(i,s)} canRead(i:AuthIdentity){return i.roles.length>0} }

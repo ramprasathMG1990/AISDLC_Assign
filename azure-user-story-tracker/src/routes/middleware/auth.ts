@@ -1,0 +1,2 @@
+import { Request,Response,NextFunction } from "express";
+export function auth(req:Request,res:Response,next:NextFunction){const header=req.headers.authorization;if(!header?.startsWith("Bearer ")&&!process.env.ALLOW_DEV_AUTH){return res.status(401).json({code:"UNAUTHORIZED",message:"Authentication required"});}const token=header?.slice(7);const dev=(process.env.ALLOW_DEV_AUTH==="true");(req as any).identity={sub:dev?(req.headers["x-user-id"]?.toString()??"dev-user"):token??"unknown",roles:dev?(req.headers["x-roles"]?.toString().split(",")??["creator"]):["creator"]};next()}

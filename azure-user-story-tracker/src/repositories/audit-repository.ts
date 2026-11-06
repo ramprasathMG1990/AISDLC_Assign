@@ -1,0 +1,2 @@
+export interface AuditEntry {auditId:string;userStoryId?:string;entityType:string;action:string;actorId:string;occurredAt:string;changeSummary:string}
+export class InMemoryAuditRepository { private rows:AuditEntry[]=[]; append(row:Omit<AuditEntry,"auditId"|"occurredAt">){const full={...row,auditId:crypto.randomUUID(),occurredAt:new Date().toISOString()};this.rows.push(full);return full} list(id:string){return this.rows.filter(r=>r.userStoryId===id)} }

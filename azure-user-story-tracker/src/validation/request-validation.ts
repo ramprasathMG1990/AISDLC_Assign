@@ -1,0 +1,3 @@
+import { FilterSet, StoryStatus } from "../types.js";
+const STORY_STATUSES=["New","Approved","Ready","In Progress","Blocked","Testing","Completed","Closed"];
+export function validateFilter(q:any):{value?:FilterSet;errors?:Record<string,string[]>}{const errors:Record<string,string[]>={};const page=Number(q.page??1),pageSize=Number(q.pageSize??25);if(page<1||pageSize<1||pageSize>200)errors.page=["Page must be positive and pageSize must be between 1 and 200"];if(q.startDate&&q.endDate&&q.endDate<q.startDate)errors.endDate=["End date must not precede start date"];if(q.status&&!STORY_STATUSES.includes(q.status))errors.status=["Unknown story status"];return Object.keys(errors).length?{errors}:{value:{...q,page,pageSize,status:q.status as StoryStatus}}}

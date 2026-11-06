@@ -1,0 +1,3 @@
+import { FilterSet, Pagination, Priority, StoryStatus } from "./index.js";
+export interface UserStory { userStoryId:string; title:string; description:string; applicationId:string; moduleId?:string; featureId:string; storyPoints:number; priority:Priority|string; status:StoryStatus; sprintId?:string; releaseId?:string; assigneeId?:string; businessOwnerId?:string; acceptanceCriteria?:string; dependencies?:string[]; createdAt:string; updatedAt:string; createdById:string; updatedById:string; deletedAt?:string; deletedById?:string }
+export interface PaginatedStories { items:UserStory[]; pagination:Pagination }

@@ -1,0 +1,2 @@
+import PDFDocument from "pdfkit";
+export function createPdf(summary:any,filter:any):Promise<Buffer>{return new Promise((resolve,reject)=>{const doc=new PDFDocument();const chunks:Buffer[]=[];doc.on("data",(c)=>chunks.push(c));doc.on("end",()=>resolve(Buffer.concat(chunks)));doc.on("error",reject);doc.fontSize(18).text("User Story Dashboard Export");doc.fontSize(11).text(`Export date: ${new Date().toISOString()}`);doc.text(`Filter: ${JSON.stringify(filter)}`);doc.text(JSON.stringify(summary,null,2));doc.end()})}

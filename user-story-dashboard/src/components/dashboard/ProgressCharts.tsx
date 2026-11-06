@@ -1,0 +1,2 @@
+import { LineChart,Line,XAxis,YAxis,Tooltip,ResponsiveContainer } from "recharts";
+export function ProgressCharts({data}:{data:any[]}){return <figure><figcaption>Progress trend</figcaption><ResponsiveContainer width="100%" height={220}><LineChart data={data}><XAxis dataKey="name"/><YAxis/><Tooltip/><Line type="monotone" dataKey="value" stroke="#059669"/></LineChart></ResponsiveContainer></figure>}

@@ -1,0 +1,2 @@
+export interface Exporter { exportCsv(headers:string[],rows:(string|number|undefined|null)[][]):string }
+export class CsvExporter implements Exporter { exportCsv(headers:string[],rows:(string|number|undefined|null)[][]){const escape=(v:any)=>{const s=v==null?"":String(v);return /[",\r\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s};return [headers,...rows].map(r=>r.map(escape).join(",")).join("\r\n")}}
