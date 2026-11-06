@@ -8,6 +8,15 @@
 
 **Input**: User description: "The User Story Tracker lets users create, delete, view, search, and filter stories. The Dashboard displays progress KPIs and charts and provides drill-down filtering and export."
 
+## Clarifications
+
+### Session 2026-11-07
+
+- Q: Which status-transition behavior should the Tracker enforce? → A: Linear; stories can change only to the next adjacent status in the defined sequence.
+- Q: How should sprint completion percentage be calculated? → A: Completed stories divided by total stories.
+- Q: What should happen to deleted stories' data and audit records? → A: Soft-delete; remove stories from active views while preserving recoverable data.
+- Q: Which role should be allowed to delete user stories? → A: The creator, an authorized delivery manager, or an authorized administrator.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -120,7 +129,8 @@ the Dashboard's filtered result.
 
 ### Edge Cases
 
-- A deleted story must stop appearing in Dashboard totals and status charts.
+- A deleted story must stop appearing in active lists, Dashboard totals, and status charts; its
+  recoverable data and audit records must remain available to authorized administrators.
 - A blocked story must remain visible under its blocked status until another valid status is
   assigned.
 - Invalid status transitions or duplicate story IDs must be rejected with field-level feedback.
@@ -151,11 +161,19 @@ the Dashboard's filtered result.
   priority, status, and date-range filtering.
 - **FR-005**: The Tracker MUST restrict status values to New, Approved, Ready, In Progress,
   Blocked, Testing, Completed, and Closed.
+- **FR-005a**: The Tracker MUST enforce adjacent linear status transitions only in this sequence:
+  New → Approved → Ready → In Progress → Blocked → Testing → Completed → Closed. The Tracker MUST
+  reject skips, backward transitions, reopening, and transitions outside the sequence.
 - **FR-006**: The Tracker MUST record every story status change as timestamped status-history data
   associated with the acting user.
 - **FR-007**: The Tracker MUST record an auditable trail for story creation, updates, status
   changes, and deletion.
 - **FR-008**: The Tracker MUST require confirmation before deleting a story.
+- **FR-008a**: Story deletion MUST be a soft-delete: the story MUST leave active views and reports
+  but its full data MUST remain recoverable by authorized administrators. Deleted stories MUST
+  remain in audit history.
+- **FR-008b**: Story deletion MUST be available only to the story creator, an authorized delivery
+  manager, or an authorized administrator.
 - **FR-009**: The Tracker MUST reject incomplete or invalid required story fields with clear
   field-level feedback.
 - **FR-010**: The Dashboard MUST obtain tracker-owned story data exclusively from Tracker-provided
@@ -163,6 +181,8 @@ the Dashboard's filtered result.
 - **FR-011**: The Dashboard MUST display total, completed, in-progress, and blocked story counts.
 - **FR-012**: The Dashboard MUST display sprint completion percentage and total and completed story
   points.
+- **FR-012a**: Sprint completion percentage MUST equal completed stories divided by total stories
+  in the selected sprint scope, displayed as a percentage; a sprint with no stories MUST show 0%.
 - **FR-013**: The Dashboard MUST show charts for status, application, module, feature, sprint
   progress, velocity trend, story point distribution, team workload, and release progress.
 - **FR-014**: The Dashboard MUST allow drill-down from KPIs and charts to the matching stories.
